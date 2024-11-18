@@ -1,0 +1,43 @@
+@media screen and (max-width: 431px) {
+    .preminum{
+        margin: auto;
+    }
+    .preminum-ctn{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 20px;
+        background-color: rgba(199, 198, 198, 0.252);
+        padding: 0px 10px;
+        border-bottom: 1px solid rgba(201, 201, 201, 0.915);
+    }
+    .preminum-txt i{
+        font-weight:600;
+        font-size: 23px;
+    }
+    .preminum-go{
+        color: rgb(88, 88, 88);
+    }
+    /*  */
+    .invite-friends{
+        margin-top: 50px;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
