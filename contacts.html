@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Management</title>
+  <link rel="stylesheet" href="CSS/chats.css">
+  <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
+    rel="stylesheet"
+/>
+  <style>
+    .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; background: white; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); padding: 20px; }
+    .modal-header, .modal-footer { text-align: right; }
+    .modal-header button, .modal-footer button { margin-left: 10px; }
+    .contact { display: flex; align-items: center; margin-bottom: 10px; }
+    .contact img { margin-right: 10px; }
+    .send-message-btn { margin-left: auto; }
+  </style>
+</head>
+<body>
+  <header>
+    <!-- reservied only for mobile devices-->
+    <div class="chat-container">
+      <div class="chats-nav">
+          <div>
+              <h2>Contacts</h2>
+          </div>
+          <div class="nav-links-1">
+              <div>
+                  <button><i class="ri-lock-line"></i></button>
+              </div>
+              <div>
+                  <button><i class="ri-search-line"></i></button>
+              </div>
+              <div>
+                  <button><i class="ri-more-2-fill"></i></button>
+              </div>
+          </div>
+      </div>
+   </div>
+   <!-- nav 2 -->
+   <div class="">
+    <div class="nav-links-2">
+        <div>
+            <a href="chats.html"><button><i class="ri-chat-3-fill "></i></button></a>
+        </div>
+        <div>
+            <a href="calls.html"><button><i class="ri-phone-fill"></i></button></a>
+        </div>
+        <div>
+            <a href="contacts.html"><button style="color:  rgb(38, 109, 203);"><i class="ri-group-fill"></i></button></a>
+        </div>
+        <div>
+            <a href="settings.html"><button><i class="ri-settings-5-line"></i></button></a>
+        </div>
+    </div>
+  </div>
+  <!-- chat-users -->
+
+  <button id="add-contact-btn">Add Contact</button>
+  
+  <div id="contacts-list"></div>
+
+  <!-- Add Contact Modal -->
+  <div id="add-contact-modal" class="modal">
+    <div class="modal-header">
+      <button id="close-modal">X</button>
+    </div>
+    <form id="add-contact-form">
+      <label for="contact-mobile-number">Mobile Number:</label>
+      <input type="text" id="contact-mobile-number" placeholder="123-456" required>
+      <div class="modal-footer">
+        <button type="submit">Add</button>
+      </div>
+    </form>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+import { 
+  getFirestore, 
+  collection, 
+  doc, 
+  getDoc, 
+  updateDoc, 
+  arrayUnion, 
+  query, 
+  where, 
+  getDocs, 
+  onSnapshot 
+} from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBX74wlrm96EE9zO7QQYSI21xGp_eO40IE",
+  authDomain: "posts-c532d.firebaseapp.com",
+  projectId: "posts-c532d",
+  storageBucket: "posts-c532d.appspot.com",
+  messagingSenderId: "742123859279",
+  appId: "1:742123859279:web:13ba1af7ac53774a1e693a"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// DOM Elements
+const addContactBtn = document.getElementById("add-contact-btn");
+const addContactModal = document.getElementById("add-contact-modal");
+const closeModal = document.getElementById("close-modal");
+const addContactForm = document.getElementById("add-contact-form");
+const contactMobileNumber = document.getElementById("contact-mobile-number");
+const contactsList = document.getElementById("contacts-list");
+
+// Current user's data
+let currentUser;
+
+// Open modal
+addContactBtn.addEventListener("click", () => {
+  addContactModal.style.display = "block";
+});
+
+// Close modal
+closeModal.addEventListener("click", () => {
+  addContactModal.style.display = "none";
+});
+
+// Format mobile number input
+contactMobileNumber.addEventListener("input", (e) => {
+  let value = e.target.value.replace(/-/g, ""); // Remove existing dashes
+  if (value.length > 3) {
+    value = value.slice(0, 3) + "-" + value.slice(3); // Add dash after 3 digits
+  }
+  e.target.value = value;
+});
+
+// Fetch and display user's contacts
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    currentUser = user;
+    // Listen to changes in user's contacts
+    onSnapshot(doc(db, "users", user.uid), (doc) => {
+      if (doc.exists()) {
+        const userData = doc.data();
+        const contacts = userData.contacts || [];
+        displayContacts(contacts);
+      }
+    });
+  } else {
+    window.location.href = "login.html"; // Redirect to login if not authenticated
+  }
+});
+
+let contactIds = [];  // Declare contactIds in a higher scope
+
+const searchInput = document.getElementById("searchInput");
+
+async function loadContacts() {
+  // Fetch the list of contacts (this should be your logic to get contacts from the database)
+  const snapshot = await getDocs(collection(db, "contacts"));
+  contactIds = snapshot.docs.map(doc => doc.id);  // Store the contact IDs
+
+  // Initially display contacts without any search query
+  displayContacts(contactIds);
+}
+
+async function displayContacts(contacts, query = "") {
+  contactsList.innerHTML = ""; // Clear existing contacts
+  for (const contactId of contacts) {
+    const contactDoc = await getDoc(doc(db, "users", contactId));
+    if (contactDoc.exists()) {
+      const contactData = contactDoc.data();
+      
+      // Filter contacts by name or mobile number based on the search query
+      const contactName = `${contactData.firstName} ${contactData.lastName}`.toLowerCase();
+      const contactMobile = contactData.mobileNumber.toLowerCase();
+      const searchQuery = query.toLowerCase();
+      
+      if (contactName.includes(searchQuery) || contactMobile.includes(searchQuery)) {
+        const contactDiv = document.createElement("div");
+        contactDiv.classList.add("contact");
+        contactDiv.innerHTML = `
+          <img src="${contactData.profileImageUrl}" alt="Profile Image" style="width: 50px; height: 50px; border-radius: 50%;">
+          <h4>${contactData.firstName} ${contactData.lastName}</h4>
+          <p>${contactData.mobileNumber}</p>
+          <button class="send-message-btn" data-id="${contactId}">Chat <i class="ri-arrow-right-up-line"></i></button>
+          <button class="delete-contact-btn" data-id="${contactId}"><i class="ri-close-large-line"></i></button>
+        `;
+        contactsList.appendChild(contactDiv);
+
+        // Add event listener to "Send Message" button
+        const sendMessageBtn = contactDiv.querySelector(".send-message-btn");
+        sendMessageBtn.addEventListener("click", async () => {
+          await startChat(contactId, contactData);
+          window.location.href = "chats.html";
+        });
+
+        // Add event listener to "Delete Contact" button
+        const deleteContactBtn = contactDiv.querySelector(".delete-contact-btn");
+        deleteContactBtn.addEventListener("click", async () => {
+          const confirmation = confirm(`Are you sure you want to delete ${contactData.firstName} ${contactData.lastName} from your contacts?`);
+          if (confirmation) {
+            await deleteContact(contactId);
+          }
+        });
+      }
+    }
+  }
+}
+
+// Event listener to handle the search input change
+searchInput.addEventListener("input", (e) => {
+  const query = e.target.value;
+  displayContacts(contactIds, query);  // Re-display contacts with filtered query
+});
+
+// Load contacts initially when the page is loaded
+loadContacts();
+
+// Function to delete a contact
+// Function to delete a contact and remove associated chats
+async function deleteContact(contactId) {
+  const userRef = doc(db, "users", currentUser.uid);
+  const userDoc = await getDoc(userRef);
+
+  if (userDoc.exists()) {
+    const userData = userDoc.data();
+    const updatedContacts = userData.contacts.filter((id) => id !== contactId); // Remove the contact
+    const updatedChats = (userData.chats || []).filter((chat) => chat.contactId !== contactId); // Remove associated chats
+
+    // Update the user's contacts and chats in Firestore
+    await updateDoc(userRef, {
+      contacts: updatedContacts,
+      chats: updatedChats,
+    });
+
+    // Update UI
+    alert("Contact and associated chat removed successfully.");
+    displayContacts(updatedContacts);
+    displayChats(); // Update the chats UI
+  } else {
+    alert("Error: Unable to delete contact. Please try again.");
+  }
+}
+
+// Start a new chat or navigate to an existing chat
+async function startChat(contactId, contactData) {
+  const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+  if (userDoc.exists()) {
+    const userData = userDoc.data();
+
+    // Check if chat already exists
+    const chatId = currentUser.uid < contactId 
+      ? `chat_${currentUser.uid}_${contactId}` 
+      : `chat_${contactId}_${currentUser.uid}`;
+      
+    if (!userData.chats?.find(chat => chat.chatId === chatId)) {
+      const userRef = doc(db, "users", currentUser.uid);
+      const contactRef = doc(db, "users", contactId);
+
+      // Update chat list for both users
+      await updateDoc(userRef, { chats: arrayUnion({ chatId, contactId }) });
+      await updateDoc(contactRef, { chats: arrayUnion({ chatId, contactId: currentUser.uid }) });
+
+      // Initialize chat in Firestore
+      const chatRef = doc(db, "chats", chatId);
+      await setDoc(chatRef, { messages: [] });
+    }
+  }
+}
+
+// Handle adding new contact
+addContactForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const mobileNumber = contactMobileNumber.value;
+
+  // Validate mobile number format
+  const mobileNumberRegex = /^\d{3}-\d{3}$/;
+  if (!mobileNumberRegex.test(mobileNumber)) {
+    alert("Please enter a valid mobile number (e.g., 123-456).");
+    return;
+  }
+
+  // Query Firestore for the entered mobile number
+  const usersRef = collection(db, "users");
+  const q = query(usersRef, where("mobileNumber", "==", mobileNumber));
+  const querySnapshot = await getDocs(q);
+
+  if (!querySnapshot.empty) {
+    // Mobile number found
+    const contactDoc = querySnapshot.docs[0];
+    const contactData = contactDoc.data();
+
+    // Add the contact's UID to the current user's contacts array
+    const userRef = doc(db, "users", currentUser.uid);
+    await updateDoc(userRef, {
+      contacts: arrayUnion(contactDoc.id),
+    });
+
+    alert(`Contact added successfully: ${contactData.firstName} ${contactData.lastName}`);
+    addContactModal.style.display = "none";
+  } else {
+    // Mobile number not found
+    alert("Mobile number not found!");
+  }
+});
+
+  </script>
+</body>
+</html>
