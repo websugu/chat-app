@@ -1,0 +1,43 @@
+body{
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+.chatting{
+    max-width: 100%;
+    background-color: rgb(38, 109, 203);
+    color: white;
+    padding: 2px 7px;
+}
+.chatting-ctn{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.chatting-bd{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.chatting-user-profile{
+    display: flex;
+    align-items: center;
+}
+.chatting-bd i{
+    font-size: 30px;
+    font-weight: 600;
+}
+.chatting-user h2{
+    font-size: 17px;
+}
+.chatting-user{
+    line-height: 18px;
+}
+.chatting-actions-1{
+    font-size: 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+/*  */
