@@ -1,0 +1,89 @@
+body {
+    margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      color: white;
+      background: #030e21;
+      font-family: Arial, Helvetica, sans-serif;
+  }
+  
+  
+  .form-section-h {
+    line-height: 10px;
+    text-align: center;
+  }
+  .form-section-h h2{
+    font-size: 2rem;
+  }
+  input {
+    font-size: 17px;
+      padding: 10px 0px;
+      border-bottom: 1px solid gray;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      outline: none;
+      margin-top: 20px;
+      width:100%;
+      background: none;
+      color: white;
+  }
+  input:focus{
+      border-bottom: 1px solid rgb(43, 88, 223);
+      border-top: none;
+      border-left: none;
+      border-right: none;
+  }
+  .form-section button {
+    background-color: #4576d3;
+      padding: 20px;
+      border:none;
+      border-radius: 50px;
+      font-size: 20px;
+      font-weight: 600;
+      margin-top: 30px;
+      float: right;
+      color: white;
+      cursor: pointer;
+  }
+  
+  .form-section button:hover {
+    background: #0056b3;
+  }
+  .auth-container, .form-toggle {
+      margin: 10% auto;
+      width: 25%;
+  }
+  .form-toggle{
+    text-align: center;
+  }
+  .form-section {
+      margin-top: 20px;
+  }
+  
+  .hidden {
+      display: none;
+  }
+  
+  
+  
+  .form-toggle button {
+      border: none;
+      background: none;
+      color: rgb(6, 6, 6);
+      cursor: pointer;
+  }
+  
+  .form-toggle button:hover {
+      color: #007bff;
+      background: none;
+  }
+
+@media screen and (max-width: 431px) {
+    .auth-container,.form-toggle {
+        margin: 35% auto;
+        width: 80%;
+    }
+    
+
+}
