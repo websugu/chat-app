@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings</title>
+  <link rel="stylesheet" href="CSS/settings.css">
+  <link rel="stylesheet" href="CSS/chats.css">
+  <link rel="stylesheet" href="CSS/chats.css">
+  <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
+    rel="stylesheet"
+/>
+</head>
+<style>
+    /* Modal styling */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 15% auto;
+  padding: 20px;
+  border-radius: 5px;
+  width: 80%;
+  max-width: 400px;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: #000;
+}
+
+</style>
+<body>
+  <header>
+    <!-- reservied only for mobile devices-->
+    <div class="chat-container">
+      <div class="chats-nav">
+          <div>
+              <h2>Settings</h2>
+          </div>
+          <div class="nav-links-1">
+              <div>
+                  <button><i class="ri-lock-line"></i></button>
+              </div>
+              <div>
+                  <button><i class="ri-search-line"></i></button>
+              </div>
+              <div>
+                  <button><i class="ri-more-2-fill"></i></button>
+              </div>
+          </div>
+      </div>
+   </div>
+   <!-- nav 2 -->
+   <div class="">
+    <div class="nav-links-2">
+        <div>
+            <a href="chats.html"><button><i class="ri-chat-3-fill "></i></button></a>
+        </div>
+        <div>
+            <a href="calls.html"><button><i class="ri-phone-fill"></i></button></a>
+        </div>
+        <div>
+            <a href="contacts.html"><button><i class="ri-group-fill"></i></button></a>
+        </div>
+        <div>
+            <a href="settings.html"><button  style="color:  rgb(38, 109, 203);"><i class="ri-settings-5-line"></i></button></a>
+        </div>
+    </div>
+  </div>
+  <!-- chat-users -->
+  <div class="call">
+    <div class="call_header">
+        <div>
+            <img src="http://www.freeiconspng.com/uploads/phone-icon-16.png" width="40px" style="border-radius: 5px;">
+        </div>
+        <div class="call-name">
+            <div class="call-missed">
+                <p style="color:rgb(50, 47, 47)">Your Private Number</p>
+            </div>
+            <div>
+                <h2 id="mobile-number"></h2>
+            </div>
+        </div>
+    </div>
+    
+    <div class="call-time">
+        <a href=""><i class="ri-share-line" style="font-size: 25px;"></i></a>
+    </div>
+</div>
+<div class="call">
+    <div class="call_header">
+        <div>
+            <img id="profile-image" src="#" alt="Profile Image" style="border-radius: 50%;width: 65px;height: 65px;">
+        </div>
+        <div class="call-name">  
+            <div>
+                <h4 style="color:rgb(131, 130, 130)" >Your Profile</h4>
+            </div>
+            <div class="call-missed">
+                <h2 id="full-name"></h2>
+            </div>
+        </div>
+    </div>
+</div>
+   <!--  
+  <div class="settings-container">
+    <button >Edit Profile</button>
+    <button >Logout</button>
+  </div>-->
+
+
+
+<!-- features for setting -->
+<div class="preminum">
+  <div class="preminum-ctn">
+      <div class="preminum-txt">
+          <p><i class="ri-vip-crown-2-line" style="color: rgb(38, 109, 203);"></i> Chat Preminum</p>
+      </div>
+      <div class="preminum-go">
+          <p>Subscribe<i class="ri-arrow-right-s-line"></i></p>
+      </div>
+  </div>
+</div>
+<!-- 2 -->
+<div class="invite-friends">
+  <div class="preminum-ctn"  id="edit-profile-btn">
+      <div class="preminum-txt">
+          <p><i class="ri-user-add-line"></i> Edit Profile</p>
+      </div>
+      <div class="preminum-go">
+          <p><i class="ri-arrow-right-s-line"></i></p>
+      </div>
+  </div>
+</div>
+<!-- 3 -->
+<div class="">
+  <div class="preminum-ctn"  id="logout-btn">
+      <div class="preminum-txt">
+          <p><i class="ri-lock-line"></i> Logout Account</p>
+      </div>
+      <div class="preminum-go">
+          <p><i class="ri-arrow-right-s-line"></i></p>
+      </div>
+  </div>
+</div>
+<!-- 4 -->
+
+
+
+
+
+  <!-- Edit Profile Modal -->
+  <div id="edit-profile-modal" class="modal">
+    <div class="modal-content">
+      <span id="close-modal" class="close">&times;</span>
+      <h3>Edit Profile</h3>
+      <form id="edit-profile-form">
+        <label for="edit-profile-image">Profile Image</label>
+        <input type="file" id="edit-profile-image" accept="image/*">
+        <img id="preview-image" src="#" alt="Preview" style="display: none; width: 100px; height: 100px;">
+        
+        <label for="edit-first-name">First Name</label>
+        <input type="text" id="edit-first-name" required>
+
+        <label for="edit-last-name">Last Name</label>
+        <input type="text" id="edit-last-name" required>
+
+        <button type="submit">Save</button>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBX74wlrm96EE9zO7QQYSI21xGp_eO40IE",
+  authDomain: "posts-c532d.firebaseapp.com",
+  projectId: "posts-c532d",
+  storageBucket: "posts-c532d.appspot.com",
+  messagingSenderId: "742123859279",
+  appId: "1:742123859279:web:13ba1af7ac53774a1e693a"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+// DOM elements
+const profileImage = document.getElementById('profile-image');
+const fullName = document.getElementById('full-name');
+const mobileNumber = document.getElementById('mobile-number');
+const logoutBtn = document.getElementById('logout-btn');
+const editProfileBtn = document.getElementById('edit-profile-btn');
+
+// Modal elements
+const editProfileModal = document.getElementById('edit-profile-modal');
+const closeModal = document.getElementById('close-modal');
+const editProfileForm = document.getElementById('edit-profile-form');
+const editProfileImage = document.getElementById('edit-profile-image');
+const previewImage = document.getElementById('preview-image');
+const editFirstName = document.getElementById('edit-first-name');
+const editLastName = document.getElementById('edit-last-name');
+
+// Fetch user info
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      profileImage.src = userData.profileImageUrl;
+      fullName.textContent = `${userData.firstName} ${userData.lastName}`;
+      mobileNumber.textContent = userData.mobileNumber;
+
+      // Pre-fill modal fields
+      editFirstName.value = userData.firstName;
+      editLastName.value = userData.lastName;
+    }
+  } else {
+    window.location.href = "login.html";
+  }
+});
+
+// Open modal
+editProfileBtn.addEventListener('click', () => {
+  editProfileModal.style.display = "block";
+});
+
+// Close modal
+closeModal.addEventListener('click', () => {
+  editProfileModal.style.display = "none";
+});
+
+// Preview profile image
+editProfileImage.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      previewImage.src = reader.result;
+      previewImage.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// Handle profile update
+editProfileForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const user = auth.currentUser;
+
+  if (user) {
+    const userRef = doc(db, "users", user.uid);
+
+    // Update Firestore fields
+    await updateDoc(userRef, {
+      firstName: editFirstName.value,
+      lastName: editLastName.value,
+    });
+
+    // Upload new profile image if selected
+    const file = editProfileImage.files[0];
+    if (file) {
+      const imageRef = ref(storage, `profile-images/${user.uid}`);
+      await uploadBytes(imageRef, file);
+      const imageUrl = await getDownloadURL(imageRef);
+
+      // Update profile image in Firestore
+      await updateDoc(userRef, { profileImageUrl: imageUrl });
+
+      // Update UI
+      profileImage.src = imageUrl;
+    }
+
+    alert("Profile updated successfully!");
+    editProfileModal.style.display = "none";
+  }
+});
+// Logout functionality
+logoutBtn.addEventListener('click', () => {
+  if (confirm("Do you want to logout?")) {
+    signOut(auth).then(() => {
+      window.location.href = "login.html";
+    }).catch((error) => {
+      alert("Error: " + error.message);
+    });
+  }
+});
+  </script>
+</body>
+</html>
