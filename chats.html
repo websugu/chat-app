@@ -1,90 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="CSS/chats.css">
-    <!-- icon itegration -->
-    <link
-    href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
-    rel="stylesheet"
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chats</title>
+  <link rel="stylesheet" href="CSS/chats.css">
+  <!-- icon itegration -->
+  <link
+  href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
+  rel="stylesheet"
 />
 </head>
 <body>
+  <header>
     <!-- reservied only for mobile devices-->
-     <div class="chat-container">
-        <div class="chats-nav">
-            <div>
-                <h2>Chats</h2>
-            </div>
-            <div class="nav-links-1">
-                <div>
-                    <button><i class="ri-lock-line"></i></button>
-                </div>
-                <div>
-                    <button><i class="ri-search-line"></i></button>
-                </div>
-                <div>
-                    <button><i class="ri-more-2-fill"></i></button>
-                </div>
-            </div>
-        </div>
-     </div>
-     <!-- nav 2 -->
-      <div class="">
-        <div class="nav-links-2">
-            <div>
-                <a href="chats.html"><button style="color:  rgb(38, 109, 203);"><i class="ri-chat-3-fill "></i></button></a>
-            </div>
-            <div>
-                <a href="call.html"><button><i class="ri-phone-fill"></i></button></a>
-            </div>
-            <div>
-                <a href="contact.html"><button><i class="ri-group-fill"></i></button></a>
-            </div>
-            <div>
-                <a href="setting.html"><button><i class="ri-settings-5-line"></i></button></a>
-            </div>
-        </div>
+    <div class="chat-container">
+      <div class="chats-nav">
+          <div>
+              <h2>Chats</h2>
+          </div>
+          <div class="nav-links-1">
+              <div>
+                  <button><i class="ri-lock-line"></i></button>
+              </div>
+              <div>
+                  <button><i class="ri-search-line"></i></button>
+              </div>
+              <div>
+                  <button><i class="ri-more-2-fill"></i></button>
+              </div>
+          </div>
       </div>
-      <!-- chat-users -->
-    <div class="chat-users">
-        <div class="chat-users-content" >
-            <div>
-                <img src="https://i.pinimg.com/originals/87/14/55/8714556a52021ba3a55c8e7a3547d28c.png" alt="" style="border-radius: 50%;width: 65px;height: 65px;">
-            </div> 
-            <div class="user-name">
-                <div>
-                    <h3>Ali Ahmed</h3>
-                </div>
-                <div>
-                    <p>Welcome to your app</p>
-                </div> 
-            </div>
+   </div>
+   <!-- nav 2 -->
+   <div class="">
+    <div class="nav-links-2">
+        <div>
+            <a href="chats.html"><button style="color:  rgb(38, 109, 203);"><i class="ri-chat-3-fill "></i></button></a>
         </div>
         <div>
-            <small>10/19/2000</small>
-        </div>
-    </div><hr>
-    <!-- 2 -->
-    <div class="chat-users">
-        <div class="chat-users-content" >
-            <div>
-                <img src="https://i.pinimg.com/originals/87/14/55/8714556a52021ba3a55c8e7a3547d28c.png" alt="">
-            </div> 
-            <div class="user-name">
-                <div>
-                    <h3>Ali Ahmed</h3>
-                </div>
-                <div>
-                    <p>Welcome to your app</p>
-                </div> 
-            </div>
+            <a href="calls.html"><button><i class="ri-phone-fill"></i></button></a>
         </div>
         <div>
-            <small>10/19/2000</small>
+            <a href="contacts.html"><button><i class="ri-group-fill"></i></button></a>
         </div>
-    </div><hr>
+        <div>
+            <a href="settings.html"><button><i class="ri-settings-5-line"></i></button></a>
+        </div>
+    </div>
+  </div>
+  <!-- chat-users -->
+    <!-- <nav>
+      <ul>
+        <li><a href="chats.html">Chats</a></li>
+        <li><a href="chatting.html">Chatting</a></li>
+        <li><a href="calls.html">Calls</a></li>
+        <li><a href="contacts.html">Contacts</a></li>
+        <li><a href="settings.html">Settings</a></li>
+      </ul>
+    </nav> -->
+  </header>
+  <main>
+    <div id="chats-list"></div>
+  </main>
+  <script type="module">
+   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+// Firebase configuration (use your own Firebase config)
+const firebaseConfig = {
+  apiKey: "AIzaSyBX74wlrm96EE9zO7QQYSI21xGp_eO40IE",
+  authDomain: "posts-c532d.firebaseapp.com",
+  projectId: "posts-c532d",
+  storageBucket: "posts-c532d.appspot.com",
+  messagingSenderId: "742123859279",
+  appId: "1:742123859279:web:13ba1af7ac53774a1e693a",
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
+
+const chatsList = document.getElementById("chats-list");
+
+// Display active chats
+async function displayChats() {
+  const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+  if (userDoc.exists()) {
+    const userData = userDoc.data();
+    const chats = userData.chats || [];
+
+    chatsList.innerHTML = "";
+    for (const chat of chats) {
+      const contactDoc = await getDoc(doc(db, "users", chat.contactId));
+      if (contactDoc.exists()) {
+        const contactData = contactDoc.data();
+        const chatDiv = document.createElement("div");
+        chatDiv.classList.add("chat");
+        chatDiv.innerHTML = `
+      <div class="chat-users">
+        <div class="open-chat-btn" data-id="${chat.chatId}" data-contact="${chat.contactId}">
+          <div class="chat-users-content" >
+              <div>
+                  <img src="${contactData.profileImageUrl}" alt="Profile Image" style="border-radius: 50%;width: 63px;height: 63px;">
+              </div> 
+              <div class="user-name">
+                  <div>
+                      <h3>${contactData.firstName} ${contactData.lastName}</h3>
+                  </div>
+                  <div>
+                      <p>Welcome to your app</p>
+                  </div> 
+              </div>
+           
+          </div>
+          
+        </div>
+         <div>
+              <i class="ri-arrow-right-s-line"></i>
+          </div>
+    </div>
+        `;
+        chatsList.appendChild(chatDiv);
+
+        // Add event listener to "Open Chat" button
+        const openChatBtn = chatDiv.querySelector(".open-chat-btn");
+        openChatBtn.addEventListener("click", () => {
+          const chatId = openChatBtn.dataset.id;
+          const contactId = openChatBtn.dataset.contact;
+          window.location.href = `chatting.html?chatId=${chatId}&contactId=${contactId}`;
+        });
+      }
+    }
+  }
+}
+document.querySelectorAll('.open-chat-btn').forEach((div) => {
+  div.addEventListener('click', (event) => {
+    const chatId = event.target.getAttribute('data-id');
+    const contactId = event.target.getAttribute('data-contact');
+    console.log(`Opening chat with ID: ${chatId} and Contact: ${contactId}`);
+    // Add your logic to open the chat here
+  });
+});
+
+// Fetch chats on page load
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    currentUser = user;
+    displayChats();
+  } else {
+    window.location.href = "login.html";
+  }
+});
+
+
+  </script>
 </body>
 </html>
