@@ -72,7 +72,7 @@ body{
   /* Receiver's message style (right aligned) */
   .received {
     align-self: flex-start;
-    background-color: #f1f1f1;
+    background-color: rebeccapurple;
     padding: 8px 15px;
     margin-bottom: 10px;
     border-radius: 20px;
