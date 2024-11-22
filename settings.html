@@ -300,7 +300,7 @@ editProfileForm.addEventListener('submit', async (e) => {
 logoutBtn.addEventListener('click', () => {
   if (confirm("Do you want to logout?")) {
     signOut(auth).then(() => {
-      window.location.href = "login.html";
+      window.location.href = "auth.html";
     }).catch((error) => {
       alert("Error: " + error.message);
     });
