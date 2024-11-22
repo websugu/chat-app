@@ -1,0 +1,51 @@
+.call{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid rgb(225, 225, 225);
+
+}
+.call_header{
+    display: flex;
+   align-items: center;
+   gap: 20px;
+}
+.call-name{
+    line-height: 7px;
+}
+.call-time a{
+    font-size: 20px;
+    color:  rgb(38, 109, 203);
+    text-decoration: none;
+
+}
+.call-time{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.call-time button{
+    background-color: none;
+    border: none;
+    font-size: 13px;
+    padding: 10px;
+    font-weight: 600;
+    border-radius: 20px;
+    color: rgb(29, 28, 66);
+}
+#add-contact-btn{
+    background-color: rgb(38, 109, 203);
+    color: white;
+    font-size: 30px;
+    font-weight: 600;
+    padding: 13px 14px;
+    border-radius: 50%;
+    border: none;
+    margin-top: 10px;
+}
+.call-name h2{
+    letter-spacing: 4px;
+    font-size: 1.30rem;
+    font-weight: 800;
+}
