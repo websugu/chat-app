@@ -47,7 +47,7 @@ body{
     align-items:center;
     justify-content: space-between;
     margin: 5px;
-    border-bottom: 1px solid rgb(204, 204, 204);
+    border-bottom: 1px solid rgb(225, 225, 225);
 }
 .chat-users-content{
     display: flex;
@@ -64,4 +64,11 @@ body{
 }
 .chat-users i{
     font-size: 20px;
+    font-weight: 600;
+}
+.chat-users h3{
+    font-size: 1.20rem;
+    color: rgb(9, 16, 29);
+}.chat-users p{
+    color: rgb(46, 46, 46);
 }
