@@ -116,6 +116,7 @@ section {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    font-weight: 600;
   }
   
   .sent, .received {
@@ -127,8 +128,7 @@ section {
   }
   
   .sent {
-    background-color: #d1f7ff;
-    color: #fff;
+    background-color: #abc0f888;
     align-self: flex-end;
     border-bottom-right-radius: 0;
   }
@@ -136,12 +136,13 @@ section {
   .received {
     background-color: #f1f1f1;
     align-self: flex-start;
+    
     border-bottom-left-radius: 0;
   }
   
   .timestamp {
     font-size: 0.75rem;
-    color: #585858;
+    color: #686868;
     margin-top: 5px;
     display: block;
     text-align: right;
