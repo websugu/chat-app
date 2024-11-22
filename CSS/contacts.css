@@ -180,8 +180,8 @@
   #close-modal {
     background: none;
     border: none;
-    font-size: 25px;
-    color: #262626;
+    font-size: 18px;
+    color: #c90b0b;
     cursor: pointer;
     transition: color 0.3s;
     font-weight: 600;
