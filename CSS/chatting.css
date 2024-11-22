@@ -127,7 +127,7 @@ section {
   }
   
   .sent {
-    background-color: #007bff;
+    background-color: #d1f7ff;
     color: #fff;
     align-self: flex-end;
     border-bottom-right-radius: 0;
@@ -141,7 +141,7 @@ section {
   
   .timestamp {
     font-size: 0.75rem;
-    color: #888;
+    color: #585858;
     margin-top: 5px;
     display: block;
     text-align: right;
