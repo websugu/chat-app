@@ -101,7 +101,7 @@ async function displayChats() {
         const contactData = contactDoc.data();
         const chatDiv = document.createElement("div");
         chatDiv.classList.add("chat");
-        chatDiv.innerHTML = `
+        chatDiv.innerHTML =`
       <div class="chat-users">
         <div class="open-chat-btn" data-id="${chat.chatId}" data-contact="${chat.contactId}">
           <div class="chat-users-content" >
@@ -113,14 +113,14 @@ async function displayChats() {
                       <h3>${contactData.firstName} ${contactData.lastName}</h3>
                   </div>
                   <div>
-                      <p>Welcome to your app</p>
+                      <p>continue the discutions...</p>
                   </div> 
               </div>
            
-          </div>
+          </div>   
           
         </div>
-         <div>
+        <div>
               <i class="ri-arrow-right-s-line"></i>
           </div>
     </div>
