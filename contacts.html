@@ -10,13 +10,11 @@
     href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
     rel="stylesheet"
 />
-  <style>
-    .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; background: white; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); padding: 20px; }
-    .modal-header, .modal-footer { text-align: right; }
-    .modal-header button, .modal-footer button { margin-left: 10px; }
-    
-  </style>
 </head>
+<style>
+ 
+
+</style>
 <body>
   <header>
     <!-- reservied only for mobile devices-->
@@ -64,18 +62,23 @@
   <div id="contacts-list"></div>
 
   <!-- Add Contact Modal -->
-  <div id="add-contact-modal" class="modal">
-    <div class="modal-header">
-      <button id="close-modal">X</button>
-    </div>
-    <form id="add-contact-form">
-      <label for="contact-mobile-number">Mobile Number:</label>
-      <input type="text" id="contact-mobile-number" placeholder="123-456" required>
-      <div class="modal-footer">
-        <button type="submit">Add</button>
-      </div>
-    </form>
+  <div id="modal-overlay" class="modal-overlay"></div>
+<div id="add-contact-modal" class="modal">
+  <div class="modal-header">
+    <button id="close-modal"><i class="ri-close-large-line"></i></button>
   </div>
+  <div style="text-align: center;">
+    <h2>Add New Contact</h2>
+  </div>
+  <form id="add-contact-form">
+    <input type="text" id="contact-mobile-number" placeholder="123-456" required maxlength="7">
+    <small id="error" style="color: rgb(162, 11, 11);"></small>
+    <div class="modal-footer">
+      <button type="submit"><i class="ri-arrow-right-line" style="background: none;"></i></button>
+    </div>
+  </form>
+</div>
+
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
@@ -318,7 +321,8 @@ addContactForm.addEventListener("submit", async (e) => {
     addContactModal.style.display = "none";
   } else {
     // Mobile number not found
-    alert("Mobile number not found!");
+    document.getElementById('error').textContent=' Mobile number not found!'
+    // alert("");
   }
 });
 
