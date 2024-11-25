@@ -296,7 +296,7 @@ onAuthStateChanged(auth, async (user) => {
       if (contactDoc.exists()) {
         const contactData = contactDoc.data();
         document.getElementById("contact-name").textContent = `${contactData.firstName} ${contactData.lastName}`;
-        document.getElementById("contact-image").src = contactData.profileImageUrl;
+        document.getElementById("contact-image").src = ${contactData.profileImageUrl || 'http://www.freeiconspng.com/uploads/phone-icon-16.png'};
       }
 
       displayMessages();
