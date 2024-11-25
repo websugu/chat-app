@@ -106,7 +106,7 @@ async function displayChats() {
         <div class="open-chat-btn" data-id="${chat.chatId}" data-contact="${chat.contactId}">
           <div class="chat-users-content" >
               <div>
-                  <img src="${contactData.profileImageUrl}" alt="Profile Image" style="border-radius: 50%;width: 63px;height: 63px;">
+                <img src="${contactData.profileImageUrl || 'http://www.freeiconspng.com/uploads/phone-icon-16.png'}" alt="Profile Image" style="border-radius: 50%;width: 63px;height: 63px;">
               </div> 
               <div class="user-name">
                   <div>
