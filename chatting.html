@@ -11,6 +11,9 @@
     rel="stylesheet"/>
 
 </head>
+<style>
+  
+</style>
 <body>
 <section>
   <div class="chatting">
@@ -26,7 +29,6 @@
             </div>
             <div class="chatting-user">
                 <h2 id="contact-name"></h2>
-                <!-- <small>online</small> -->
             </div>
         </div>
         <div class="chatting-actions-1">
@@ -40,12 +42,6 @@
     </div>
 </div>
 
-
-
-  <!-- <div id="chat-header">
-    <img id="contact-image" src="" alt="Contact Image" style="width: 50px; height: 50px; border-radius: 50%;">
-    <h2 >Contact Name</h2>
-  </div> -->
 
 <div class="chatting-body">
   <div>
@@ -63,7 +59,10 @@
     <button id="send-button"><i class="ri-send-plane-2-line"></i></button>
   </div>
 </div>
-  </section>
+</section>  
+  
+  
+  
   <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
@@ -135,6 +134,7 @@ function formatTimestamp(timestamp) {
 }
 
 // Display messages
+// Display messages
 async function displayMessages() {
   const messagesQuery = query(
     collection(db, "messages"),
@@ -143,52 +143,57 @@ async function displayMessages() {
   );
 
   onSnapshot(messagesQuery, (snapshot) => {
-  chatMessages.innerHTML = ""; // Clear chat
-  snapshot.forEach((doc) => {
-    const message = doc.data();
-    const messageDiv = document.createElement("div");
+    chatMessages.innerHTML = ""; // Clear chat
+    snapshot.forEach((doc) => {
+      const message = doc.data();
 
-    // Attach the message ID as a data attribute
-    messageDiv.dataset.messageId = doc.id;
+      // Only show messages for the active contact
+      if (!message.participants.includes(contactId)) return;
 
-    // Handle message types
-    if (message.type === "text") {
-      messageDiv.textContent = message.text;
-    } else if (message.type === "image") {
-      const img = document.createElement("img");
-      img.src = message.imageUrl;
-      img.alt = "Chat Image";
-      img.style.maxWidth = "200px";
-      messageDiv.appendChild(img);
-    } else if (message.type === "audio") {
-      const audio = document.createElement("audio");
-      audio.src = message.audioUrl;
-      audio.controls = true;
-      messageDiv.appendChild(audio);
-    }
+      const messageDiv = document.createElement("div");
 
-    // Timestamp
-    const timestamp = document.createElement("span");
-    timestamp.textContent = formatTimestamp(message.timestamp);
-    timestamp.classList.add("timestamp");
+      // Attach the message ID as a data attribute
+      messageDiv.dataset.messageId = doc.id;
 
-    if (message.senderId === currentUser.uid) {
-      messageDiv.classList.add("sent");
-    } else {
-      messageDiv.classList.add("received");
-    }
+      // Handle message types
+      if (message.type === "text") {
+        messageDiv.textContent = message.text;
+      } else if (message.type === "image") {
+        const img = document.createElement("img");
+        img.src = message.imageUrl;
+        img.alt = "Chat Image";
+        img.style.maxWidth = "200px";
+        messageDiv.appendChild(img);
+      } else if (message.type === "audio") {
+        const audio = document.createElement("audio");
+        audio.src = message.audioUrl;
+        audio.controls = true;
+        messageDiv.appendChild(audio);
+      }
 
-    messageDiv.appendChild(timestamp);
+      // Timestamp
+      const timestamp = document.createElement("span");
+      timestamp.textContent = formatTimestamp(message.timestamp);
+      timestamp.classList.add("timestamp");
 
-    // Add long press listener
-    addLongPressListener(messageDiv);
+      if (message.senderId === currentUser.uid) {
+        messageDiv.classList.add("sent");
+      } else {
+        messageDiv.classList.add("received");
+      }
 
-    chatMessages.appendChild(messageDiv);
+      messageDiv.appendChild(timestamp);
+
+      // Add long press listener
+      addLongPressListener(messageDiv);
+
+      chatMessages.appendChild(messageDiv);
+    });
   });
-});
-
 }
 
+
+// Send a text message
 // Send a text message
 async function sendMessage() {
   const text = messageInput.value.trim();
@@ -199,12 +204,13 @@ async function sendMessage() {
     text,
     senderId: currentUser.uid,
     receiverId: contactId,
-    participants: [currentUser.uid, contactId],
+    participants: [currentUser.uid, contactId], // Ensure both users are included
     timestamp: new Date(),
   });
 
   messageInput.value = ""; // Clear input
 }
+
 
 // Send an image
 imageButton.addEventListener("click", () => {
@@ -341,6 +347,7 @@ function showDeleteOptions(messageDiv) {
   if (existingOptions) existingOptions.remove();
 
   const deleteOptionsDiv = document.createElement("div");
+   
   deleteOptionsDiv.classList.add("delete-options");
 
   const deleteForEveryone = document.createElement("button");
