@@ -94,36 +94,60 @@ async function displayChats() {
     const userData = userDoc.data();
     const chats = userData.chats || [];
 
-    chatsList.innerHTML = "";
+    chatsList.innerHTML = ""; // Clear the list
+
+    if (chats.length === 0) {
+      // Show "Add Contact" button if no chats are present
+      const addContactButton = document.createElement("button");
+      addContactButton.textContent = "Add Contact";
+      addContactButton.classList.add("add-contact-btn"); // Add styling class
+      addContactButton.style.cssText = `
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 20px auto;
+        display: block;
+      `;
+      addContactButton.addEventListener("click", () => {
+        window.location.href = "contacts.html"; // Redirect to the "Add Contact" page
+      });
+
+      chatsList.appendChild(addContactButton);
+      return; // Exit the function since there are no chats
+    }
+
+    // Populate chats if available
     for (const chat of chats) {
       const contactDoc = await getDoc(doc(db, "users", chat.contactId));
       if (contactDoc.exists()) {
         const contactData = contactDoc.data();
         const chatDiv = document.createElement("div");
         chatDiv.classList.add("chat");
-        chatDiv.innerHTML =`
-      <div class="chat-users">
-        <div class="open-chat-btn" data-id="${chat.chatId}" data-contact="${chat.contactId}">
-          <div class="chat-users-content" >
-              <div>
-                <img src="${contactData.profileImageUrl || 'http://www.freeiconspng.com/uploads/phone-icon-16.png'}" alt="Profile Image" style="border-radius: 50%;width: 63px;height: 63px;">
-              </div> 
-              <div class="user-name">
+        chatDiv.innerHTML = `
+          <div class="chat-users">
+            <div class="open-chat-btn" data-id="${chat.chatId}" data-contact="${chat.contactId}">
+              <div class="chat-users-content">
                   <div>
-                      <h3>${contactData.firstName} ${contactData.lastName}</h3>
+                      <img src="${contactData.profileImageUrl || 'images/default-profile.png'}" alt="Profile Image" style="border-radius: 50%;width: 63px;height: 63px;">
                   </div>
-                  <div>
-                      <p>continue the discutions...</p>
-                  </div> 
+                  <div class="user-name">
+                      <div>
+                          <h3>${contactData.firstName} ${contactData.lastName}</h3>
+                      </div>
+                      <div>
+                          <p>Continue the discussions...</p>
+                      </div> 
+                  </div>
+              </div>   
+            </div>
+            <div>
+                  <i class="ri-arrow-right-s-line"></i>
               </div>
-           
-          </div>   
-          
-        </div>
-        <div>
-              <i class="ri-arrow-right-s-line"></i>
           </div>
-    </div>
         `;
         chatsList.appendChild(chatDiv);
 
@@ -138,6 +162,7 @@ async function displayChats() {
     }
   }
 }
+
 document.querySelectorAll('.open-chat-btn').forEach((div) => {
   div.addEventListener('click', (event) => {
     const chatId = event.target.getAttribute('data-id');
@@ -153,7 +178,7 @@ onAuthStateChanged(auth, (user) => {
     currentUser = user;
     displayChats();
   } else {
-    window.location.href = "login.html";
+    window.location.href = "auth.html";
   }
 });
 
