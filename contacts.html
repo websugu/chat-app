@@ -13,6 +13,21 @@
 </head>
 <style>
  
+ .call-popup, .ringing-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+.call-popup img, .ringing-popup img {
+  margin-bottom: 10px;
+}
 
 </style>
 <body>
@@ -71,7 +86,7 @@
     <h2>Add New Contact</h2>
   </div>
   <form id="add-contact-form">
-    <input type="tel" id="contact-mobile-number" placeholder="123-456" required maxlength="7">
+    <input type="text" id="contact-mobile-number" placeholder="123-456" required maxlength="7">
     <small id="error" style="color: rgb(162, 11, 11);"></small>
     <div class="modal-footer">
       <button type="submit"><i class="ri-arrow-right-line" style="background: none;"></i></button>
@@ -80,7 +95,7 @@
   </form>
 </div>
 
-
+<script src="js/contacts.js"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
@@ -190,7 +205,7 @@ async function displayContacts(contacts, query = "") {
           <div class="call">
             <div class="call_header">
                 <div>
-                    <img src="${contactData.profileImageUrl}" alt="Profile Image" width="60px" height="60px" style="border-radius: 50px;">
+                    <img src="${contactData.profileImageUrl || 'images/default-profile.png'}" alt="Profile Image" width="60px" height="60px" style="border-radius: 50px;">
                 </div>
                 <div class="call-name">
                     <div>
@@ -203,10 +218,17 @@ async function displayContacts(contacts, query = "") {
             </div>
             
             <div class="call-time">
+              <button class="call-btn" data-id="${contactId}">Call</button>
                 <button class="send-message-btn" data-id="${contactId}">Chat <i class="ri-arrow-right-up-line"></i></button>
                 <button class="delete-contact-btn" data-id="${contactId}"><i class="ri-close-large-line"></i></button>
             </div>
         </div>`;
+
+        const callButton = contactDiv.querySelector(".call-btn");
+        callButton.addEventListener("click", () => initiateCall(contactId, contactData));
+
+
+
         contactsList.appendChild(contactDiv);
 
         // Add event listener to "Send Message" button
@@ -326,6 +348,128 @@ addContactForm.addEventListener("submit", async (e) => {
     // alert("");
   }
 });
+
+
+// call start here
+// Add click listener for the call button
+await updateDoc(receiverDocRef, {
+  incomingCall: {
+    from: currentUser.uid,
+    callerName: currentUser.displayName,
+    callerImage: currentUser.profileImageUrl,
+  },
+});
+
+
+
+  function initiateCall(contactId, contactData) {
+  // Show calling popup
+  const callPopup = document.createElement("div");
+  callPopup.classList.add("call-popup");
+  callPopup.innerHTML = `
+    <div class="call-container">
+      <img src="${contactData.profileImageUrl || "images/default-profile.png"}" alt="Contact Image" style="width: 80px; height: 80px; border-radius: 50%;">
+      <h3>Calling ${contactData.firstName} ${contactData.lastName}</h3>
+      <button class="cancel-call">Cancel Call</button>
+    </div>
+  `;
+
+  document.body.appendChild(callPopup);
+
+  // Notify the receiver
+  updateDoc(doc(db, "users", contactId), {
+    incomingCall: {
+      from: currentUser.uid,
+      callerName: `${currentUser.firstName} ${currentUser.lastName}`,
+      callerImage: currentUser.profileImageUrl || "images/default-profile.png",
+    },
+  });
+
+  // Cancel call button
+  const cancelCallBtn = callPopup.querySelector(".cancel-call");
+  cancelCallBtn.addEventListener("click", () => {
+    endCall(contactId);
+    callPopup.remove();
+  });
+}
+
+
+
+// 
+
+onSnapshot(doc(db, "users", currentUser.uid), (docSnapshot) => {
+  console.log("Snapshot received:", docSnapshot.data());
+
+  const userData = docSnapshot.data();
+  if (userData.incomingCall) {
+    console.log("Incoming call detected:", userData.incomingCall);
+
+    const { from, callerName, callerImage } = userData.incomingCall;
+
+    // Show ringing popup
+    const ringingPopup = document.createElement("div");
+    ringingPopup.classList.add("ringing-popup");
+    ringingPopup.innerHTML = `
+      <div class="call-container">
+        <img src="${callerImage}" alt="Caller Image" style="width: 80px; height: 80px; border-radius: 50%;">
+        <h3>${callerName} is calling...</h3>
+        <button class="accept-call">Accept</button>
+        <button class="refuse-call">Refuse</button>
+      </div>
+    `;
+
+    document.body.appendChild(ringingPopup);
+
+    // Accept call
+    const acceptCallBtn = ringingPopup.querySelector(".accept-call");
+    acceptCallBtn.addEventListener("click", () => {
+      startCall(from);
+      ringingPopup.remove();
+    });
+
+    // Refuse call
+    const refuseCallBtn = ringingPopup.querySelector(".refuse-call");
+    refuseCallBtn.addEventListener("click", () => {
+      endCall(from);
+      ringingPopup.remove();
+    });
+  } else {
+    console.log("No incoming call");
+  }
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+  onSnapshot(doc(db, "users", currentUser.uid), (docSnapshot) => {
+    if (!docSnapshot.exists()) {
+      console.error("User document does not exist!");
+      return;
+    }
+
+    const userData = docSnapshot.data();
+    if (userData.incomingCall) {
+      console.log("Incoming call:", userData.incomingCall);
+      // Display popup as shown in previous steps
+    }
+  });
+});
+
+console.log("Displaying ringing popup for incoming call...");
+
+
+function startCall(contactId) {
+  // Clear call notifications
+  updateDoc(doc(db, "users", currentUser.uid), { incomingCall: null });
+  updateDoc(doc(db, "users", contactId), { incomingCall: null });
+
+  // Redirect to calling interface
+  window.location.href = `calling.html?contactId=${contactId}`;
+}
+
+
+function endCall(contactId) {
+  updateDoc(doc(db, "users", currentUser.uid), { incomingCall: null });
+  updateDoc(doc(db, "users", contactId), { incomingCall: null });
+}
 
   </script>
 </body>
